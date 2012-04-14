@@ -1,6 +1,6 @@
 require "helper"
 
-describe MongoTrail do
+describe MongoTrail, mongo: true do
 
   it "can record and export audit trails"
 
