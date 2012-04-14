@@ -2,7 +2,7 @@ require "helper"
 
 describe Mongo do
 
-  subject { Mongo::Connection.new.db("test").collection("audit_trails") }
+  subject { Mongo::Connection.new.db("test").collection("test") }
   before { subject.db.drop_collection( subject.name) }
   after  { subject.db.drop_collection( subject.name) }
 
@@ -18,14 +18,20 @@ describe Mongo do
   end
 
   it "can update" do
-    subject.update( { type: "X", id: 1 }, { type: "X", id: 1, fields: [], changes: [] }, upsert: true )
-    subject.find({ type: "X", id: 1 }).find.count.should == 1
+    subject.update( { id: 1 }, { id: 1, fields: [], changes: [] }, upsert: true )
+    subject.find({ id: 1 }).find.count.should == 1
 
     # update can't mix modifiers and regular values, so must $set the keys
-    subject.update( { type: "X", id: 1 }, { "$set" => { type: "X", id: 1 }, "$inc" => { magic: 1 }, "$addToSet" => { foo: "bar" } }, upsert: true )
-    subject.update( { type: "X", id: 1 }, { "$set" => { type: "X", id: 1 }, "$inc" => { magic: 1 }, "$addToSet" => { foo: { "$each" => [ "zap", "zip" ] } } }, upsert: true )
-    subject.find({ type: "X", id: 1 }).find.count.should == 1
-    subject.find({ type: "X", id: 1 }).find.first.should include({ "foo" => [ "bar", "zap", "zip" ] })
+    # update can't modify and set _id (as of 2.2)
+    subject.update( { id: 1 }, { "$set" => { id: 1 }, "$inc" => { magic: 1 }, "$addToSet" => { foo: "bar" } }, upsert: true, safe: true )
+    subject.update( { id: 1 }, { "$set" => { id: 1 }, "$inc" => { magic: 1 }, "$addToSet" => { foo: { "$each" => [ "zap", "zip" ] } } }, upsert: true )
+    subject.find({ id: 1 }).find.count.should == 1
+    subject.find({ id: 1 }).find.first.should include({ "foo" => [ "bar", "zap", "zip" ] })
+  end
+
+  it "can not upsert and set custom _id" do
+    expect { subject.update( { _id: 1 }, { "$set" => { _id: 1 } }, upsert: true, safe: true ) }.to raise_exception
+    expect { subject.update( { _id: 1 }, { "$iset" => { _id: 1 } }, upsert: true, safe: true ) }.to raise_exception
   end
 
   it "finds nothing as empty array" do
