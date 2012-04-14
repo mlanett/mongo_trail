@@ -13,4 +13,6 @@ Gem::Specification.new do |gem|
   gem.name          = "mongo_trail"
   gem.require_paths = ["lib"]
   gem.version       = MongoTrail::VERSION
+
+  gem.add_dependency "mongo"
 end
