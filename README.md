@@ -1,6 +1,10 @@
 # MongoTrail
 
-TODO: Write a gem description
+Track audit trails in MongoDB.
+
+A single document is created with an id given by you.
+You can append simple records to it.
+The document can be exported in a way that is easy to turn into CSV.
 
 ## Installation
 
@@ -18,7 +22,11 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+MongoTrail.record_audit_trail 1, "author" => "Mark Lanett", "gem" => "MongoTrail"
+MongoTrail.record_audit_trail 1, "author" => "Mark Lanett", "gem" => "RedisLock"
+MongoTrail.export_audit_trail(1).should have(2).items
+MongoTrail.export_audit_trail(1).first.should include( "author" => "Mark Lanett", "gem" => "MongoTrail" )
+MongoTrail.export_audit_trail(1).last.should include( "author" => "Mark Lanett", "gem" => "RedisLock" )
 
 ## Contributing
 
