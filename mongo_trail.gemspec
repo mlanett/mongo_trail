@@ -4,8 +4,7 @@ require File.expand_path('../lib/mongo_trail/version', __FILE__)
 Gem::Specification.new do |gem|
   gem.authors       = ["Mark Lanett"]
   gem.email         = ["mark.lanett@gmail.com"]
-  gem.description   = %q{TODO: Write a gem description}
-  gem.summary       = %q{TODO: Write a gem summary}
+  gem.summary       = %q{Track audit trails in MongoDB}
   gem.homepage      = ""
 
   gem.files         = `git ls-files`.split($\)
